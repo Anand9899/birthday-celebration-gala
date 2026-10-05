@@ -1,0 +1,26 @@
+{
+  "name": "birthday-celebration",
+  "version": "2.0.0",
+  "description": "The Grand Birthday Gala - Full Stack Interactive Web Application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "birthday",
+    "celebration",
+    "interactive",
+    "fullstack",
+    "animations",
+    "canvas",
+    "web-audio"
+  ],
+  "author": "Antigravity",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "rsvp_1",
+    "name": "Simran",
+    "status": "Attending",
+    "message": "Bringing the confetti and balloons! 🥳",
+    "timestamp": "2026-10-01T08:10:00.000Z"
+  },
+  {
+    "id": "rsvp_2",
+    "name": "Kabir",
+    "status": "Attending",
+    "message": "Can't wait for the cake cutting! 🎂",
+    "timestamp": "2026-10-01T08:20:00.000Z"
+  }
+]

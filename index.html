@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#120e24">
+  <meta name="description" content="A spectacular, Full-Stack interactive 3D birthday celebration with fireworks, cake, candles, live guestbook, and music!">
+  <title>Happy Birthday! ✨ | The Grand Birthday Gala</title>
+
+  <!-- Google Fonts: Editorial Serif + Modern Clean Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="public/style.css">
+</head>
+<body>
+
+  <!-- Ambient Light Spheres -->
+  <div class="ambient-sphere sphere-1" aria-hidden="true"></div>
+  <div class="ambient-sphere sphere-2" aria-hidden="true"></div>
+  <div class="ambient-sphere sphere-3" aria-hidden="true"></div>
+
+  <!-- Interactive Canvases -->
+  <canvas id="fireworks-canvas" aria-hidden="true"></canvas>
+  <canvas id="fx-canvas" aria-hidden="true"></canvas>
+
+  <!-- Interactive Floating Balloons Layer -->
+  <div class="balloon-field" id="balloon-field" aria-label="Floating party balloons"></div>
+
+  <!-- STAGE 1: CINEMATIC INVITATION ENVELOPE OVERLAY -->
+  <div class="curtain-overlay" id="curtain-overlay">
+    <div class="envelope-box" id="open-envelope-trigger">
+      <div class="wax-seal">👑</div>
+      <div class="envelope-tag">Official Birthday Invitation</div>
+      <h1 class="envelope-title" id="curtain-name-title">Happy Birthday!</h1>
+      <p class="envelope-sub">
+        A magical world of celebration, fireworks, music, and heartwarming wishes was specially crafted just for you today.
+      </p>
+      <button class="btn-open-sesame" type="button">
+        <span>✨ Unwrap The Celebration</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- HEADER & NAVIGATION CONTROLS -->
+  <header class="topbar">
+    <div class="brand-group">
+      <div class="brand-badge">🎂</div>
+      <div class="brand-title">Birthday Gala Edition</div>
+    </div>
+
+    <div class="top-actions">
+      <!-- Music Synthesizer / Jukebox Button -->
+      <button class="pill-btn" id="music-btn" type="button" aria-pressed="false" title="Play Happy Birthday Song">
+        <div class="eq-bars">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <span id="music-label">Play Song</span>
+      </button>
+
+      <!-- Jukebox Playlist Selector -->
+      <button class="pill-btn" id="jukebox-btn" type="button" title="Birthday Tracks Jukebox">
+        <span>🎵</span>
+        <span>Tracks</span>
+      </button>
+
+      <!-- Live Theme Switcher -->
+      <button class="pill-btn" id="theme-btn" type="button" title="Switch Party Theme">
+        <span>🎨</span>
+        <span id="theme-label">Themes</span>
+      </button>
+
+      <!-- 30s Balloon Pop Arcade Game -->
+      <button class="pill-btn" id="game-btn" type="button" title="Play 30s Balloon Pop Game">
+        <span>🎈</span>
+        <span>Pop Game</span>
+      </button>
+
+      <!-- Launch Fireworks Show -->
+      <button class="pill-btn" id="launch-fireworks-btn" type="button" title="Launch Pyrotechnics">
+        <span>🎆</span>
+        <span>Fireworks</span>
+      </button>
+
+      <!-- Replay Invitation Overlay -->
+      <button class="pill-btn" id="replay-curtain-btn" type="button" title="View Invitation Envelope Again">
+        <span>📜</span>
+        <span>Envelope</span>
+      </button>
+
+      <!-- Share Button -->
+      <button class="pill-btn" id="share-header-btn" type="button" title="Share with friends">
+        <span>💌</span>
+        <span>Share</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN HERO SECTION WITH INTERACTIVE 3D CAKE -->
+  <main>
+    <section class="hero-container" aria-labelledby="main-birthday-title">
+      <div class="hero-grid">
+        
+        <!-- Left Column: Dynamic Titles & Personalization -->
+        <div class="hero-left">
+          <div class="mini-badge">
+            <span class="spark-dot"></span>
+            <span>Today is all about you</span>
+          </div>
+
+          <h1 class="hero-heading" id="main-birthday-title">
+            <span class="subtitle">Cheers to you,</span>
+            <span class="name-gradient" id="hero-name-display" title="Click to rename">Birthday Star ✨</span>
+          </h1>
+
+          <p class="hero-text">
+            May your special day be overflowing with pure joy, spontaneous belly laughs, heartfelt hugs, and the biggest slice of delicious cake!
+          </p>
+
+          <!-- Party Countdown Clock with Custom Set Controls -->
+          <div class="countdown-wrapper" style="display:flex; align-items:center; gap:12px; margin-bottom:28px; flex-wrap:wrap;">
+            <div class="countdown-box" id="countdown-box" title="Click to set countdown date & time!" style="cursor:pointer;">
+              <div class="countdown-unit">
+                <div class="countdown-val" id="cd-days">00</div>
+                <div class="countdown-lbl">Days</div>
+              </div>
+              <div class="countdown-unit">
+                <div class="countdown-val" id="cd-hours">12</div>
+                <div class="countdown-lbl">Hours</div>
+              </div>
+              <div class="countdown-unit">
+                <div class="countdown-val" id="cd-mins">00</div>
+                <div class="countdown-lbl">Mins</div>
+              </div>
+              <div class="countdown-unit">
+                <div class="countdown-val" id="cd-secs">00</div>
+                <div class="countdown-lbl">Secs</div>
+              </div>
+            </div>
+
+            <button class="pill-btn" id="edit-countdown-btn" type="button" title="Set your birthday celebration time">
+              <span>⏱️</span>
+              <span>Set Time</span>
+            </button>
+          </div>
+
+          <!-- Quick Name & Age Personalizer Input -->
+          <form class="name-input-bar" id="name-form" action="#">
+            <input type="text" id="name-input" maxlength="28" autocomplete="off" placeholder="Name..." aria-label="Birthday Star Name">
+            <input type="number" id="age-input" min="1" max="120" placeholder="Age (e.g. 21)" aria-label="Birthday Age" style="max-width: 110px; border-left: 1px solid var(--border-glass); padding-left: 10px;">
+            <button type="submit">Set Stars ✨</button>
+          </form>
+
+          <!-- Main Action Buttons -->
+          <div class="hero-btn-row">
+            <button class="btn-primary-glow" id="open-gift-modal-btn" type="button">
+              <span>🎁 Surprise Gift</span>
+            </button>
+            <button class="btn-candle-action" id="candle-action-btn" type="button">
+              <span>🎂 Blow Candle</span>
+            </button>
+            <button class="btn-cut-cake" id="cut-cake-btn" type="button" style="display:none;">
+              <span>🍰 Cut The Cake</span>
+            </button>
+            <button class="pill-btn" id="spin-wheel-btn" type="button" title="Spin the Birthday Wheel">
+              <span>🎡</span>
+              <span>Spin Wheel</span>
+            </button>
+            <button class="pill-btn" id="download-card-btn" type="button" title="Download Greeting Poster">
+              <span>📥</span>
+              <span>Download Card</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive 3D Birthday Cake -->
+        <div class="cake-stage" id="cake-stage">
+          <div class="cake-card" id="cake-card">
+            <!-- First Slice Trophy Badge -->
+            <div class="cake-slice-display" id="cake-slice-display">🍰 First Slice For The Star! ✨</div>
+            
+            <!-- SVG Interactive Cake with Animated Candle & Flame -->
+            <div class="cake-visual" id="cake-interactive-wrap" title="Tap candle to blow it out!">
+              <div class="smoke-puff">💨 ✨</div>
+              <svg viewBox="0 0 280 270" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <!-- 3D Lighting & Shadows -->
+                  <filter id="cakeDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
+                    <feOffset dx="0" dy="8" result="offsetblur"/>
+                    <feComponentTransfer><feFuncA type="linear" slope="0.45"/></feComponentTransfer>
+                    <feMerge>
+                      <feMergeNode/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+
+                  <filter id="flameGlow" x="-60%" y="-60%" width="220%" height="220%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur1"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur2"/>
+                    <feMerge>
+                      <feMergeNode in="blur2"/>
+                      <feMergeNode in="blur1"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+
+                  <!-- Gold Pedestal Stand Gradients -->
+                  <linearGradient id="platterRimGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#b38728"/>
+                    <stop offset="25%" stop-color="#fbf5b7"/>
+                    <stop offset="50%" stop-color="#d4af37"/>
+                    <stop offset="75%" stop-color="#fbf5b7"/>
+                    <stop offset="100%" stop-color="#aa771c"/>
+                  </linearGradient>
+
+                  <radialGradient id="platterBaseGrad" cx="50%" cy="40%" r="60%">
+                    <stop offset="0%" stop-color="#fff8db"/>
+                    <stop offset="60%" stop-color="#d4af37"/>
+                    <stop offset="100%" stop-color="#805a1b"/>
+                  </radialGradient>
+
+                  <!-- Bottom Tier Sponge Gradients (Rich Chocolate & Red Velvet) -->
+                  <linearGradient id="bottomSpongeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#3d1422"/>
+                    <stop offset="20%" stop-color="#701a35"/>
+                    <stop offset="50%" stop-color="#8c2343"/>
+                    <stop offset="80%" stop-color="#541328"/>
+                    <stop offset="100%" stop-color="#2a0815"/>
+                  </linearGradient>
+
+                  <radialGradient id="bottomTopSpongeGrad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#9e2a4e"/>
+                    <stop offset="80%" stop-color="#6e1933"/>
+                    <stop offset="100%" stop-color="#4a0f21"/>
+                  </radialGradient>
+
+                  <!-- Glossy Cream Drip Gradient with Specular Sheen -->
+                  <linearGradient id="creamyGlazeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="40%" stop-color="#fff6ea"/>
+                    <stop offset="85%" stop-color="#fedaa9"/>
+                    <stop offset="100%" stop-color="#e8be86"/>
+                  </linearGradient>
+
+                  <!-- Top Tier Gradients (Royal Wild Berry & Lavender Velvet) -->
+                  <linearGradient id="topSpongeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#4a154b"/>
+                    <stop offset="25%" stop-color="#8a2d8a"/>
+                    <stop offset="50%" stop-color="#a83ea8"/>
+                    <stop offset="75%" stop-color="#7b227b"/>
+                    <stop offset="100%" stop-color="#3d0f3e"/>
+                  </linearGradient>
+
+                  <radialGradient id="topSpongeSurfaceGrad" cx="50%" cy="45%" r="55%">
+                    <stop offset="0%" stop-color="#c45ec4"/>
+                    <stop offset="70%" stop-color="#8a2d8a"/>
+                    <stop offset="100%" stop-color="#551556"/>
+                  </radialGradient>
+
+                  <!-- Strawberry & Raspberry Glaze -->
+                  <linearGradient id="strawberryGlazeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ff7597"/>
+                    <stop offset="40%" stop-color="#ff2a6d"/>
+                    <stop offset="80%" stop-color="#d6004b"/>
+                    <stop offset="100%" stop-color="#910033"/>
+                  </linearGradient>
+
+                  <!-- Strawberry Fruit Shader -->
+                  <radialGradient id="strawberryBodyGrad" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stop-color="#ff6b8b"/>
+                    <stop offset="45%" stop-color="#e60045"/>
+                    <stop offset="90%" stop-color="#8f002b"/>
+                    <stop offset="100%" stop-color="#520019"/>
+                  </radialGradient>
+
+                  <!-- Candle Shading -->
+                  <linearGradient id="candleCylinderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#e6b800"/>
+                    <stop offset="30%" stop-color="#fff2a3"/>
+                    <stop offset="65%" stop-color="#ffd700"/>
+                    <stop offset="100%" stop-color="#a67c00"/>
+                  </linearGradient>
+
+                  <!-- Candle Foil Spiral -->
+                  <linearGradient id="candleStripeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#d6004b"/>
+                    <stop offset="40%" stop-color="#ff6694"/>
+                    <stop offset="80%" stop-color="#ff1a60"/>
+                    <stop offset="100%" stop-color="#80002d"/>
+                  </linearGradient>
+
+                  <!-- Realistic Multi-layer Flame Gradients -->
+                  <radialGradient id="flameHaloGrad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#ffd166" stop-opacity="0.8"/>
+                    <stop offset="40%" stop-color="#ff9e00" stop-opacity="0.4"/>
+                    <stop offset="80%" stop-color="#ff3b00" stop-opacity="0.15"/>
+                    <stop offset="100%" stop-color="#ff0044" stop-opacity="0"/>
+                  </radialGradient>
+
+                  <linearGradient id="flameCoreRealisticGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" stop-color="#00d4ff"/>
+                    <stop offset="15%" stop-color="#ffffff"/>
+                    <stop offset="45%" stop-color="#fff066"/>
+                    <stop offset="75%" stop-color="#ff8c00"/>
+                    <stop offset="100%" stop-color="#ff2200"/>
+                  </linearGradient>
+
+                  <radialGradient id="flameInnerWhite" cx="50%" cy="60%" r="45%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="60%" stop-color="#ffffcc"/>
+                    <stop offset="100%" stop-color="transparent"/>
+                  </radialGradient>
+                </defs>
+
+                <!-- 1. Gold Pedestal Cake Stand -->
+                <ellipse cx="140" cy="248" rx="116" ry="12" fill="rgba(0, 0, 0, 0.45)" filter="url(#cakeDropShadow)"/>
+                <!-- Stand Base -->
+                <path d="M 115 244 Q 140 250 165 244 L 175 254 Q 140 262 105 254 Z" fill="url(#platterBaseGrad)"/>
+                <!-- Stand Rim Plate -->
+                <ellipse cx="140" cy="242" rx="122" ry="18" fill="url(#platterRimGrad)" stroke="#ffeaa7" stroke-width="1.2"/>
+                <ellipse cx="140" cy="239" rx="114" ry="14" fill="#1c142e" opacity="0.85"/>
+                <ellipse cx="140" cy="238" rx="112" ry="13" fill="url(#platterBaseGrad)" opacity="0.6"/>
+
+                <!-- 2. Bottom Cake Tier (Belgian Velvet & Chocolate) -->
+                <!-- Bottom Sponge Body -->
+                <path d="M 40 162 Q 140 186 240 162 L 240 220 Q 140 248 40 220 Z" fill="url(#bottomSpongeGrad)"/>
+                <!-- Bottom Tier Top Oval -->
+                <ellipse cx="140" cy="162" rx="100" ry="24" fill="url(#bottomTopSpongeGrad)"/>
+
+                <!-- Golden Sugar Pearl Border at Bottom -->
+                <g fill="url(#platterRimGrad)">
+                  <circle cx="50" cy="221" r="3.2"/><circle cx="65" cy="225" r="3.2"/><circle cx="82" cy="228" r="3.2"/>
+                  <circle cx="100" cy="231" r="3.2"/><circle cx="120" cy="232" r="3.2"/><circle cx="140" cy="233" r="3.5"/>
+                  <circle cx="160" cy="232" r="3.2"/><circle cx="180" cy="231" r="3.2"/><circle cx="198" cy="228" r="3.2"/>
+                  <circle cx="215" cy="225" r="3.2"/><circle cx="230" cy="221" r="3.2"/>
+                </g>
+
+                <!-- Bottom Tier: Thick Luscious Dripping Vanilla & Gold Glaze -->
+                <path d="M 39 162 
+                         C 48 184 56 182 66 166 
+                         C 76 195 90 192 100 168 
+                         C 112 204 128 200 138 170 
+                         C 148 198 164 195 174 168 
+                         C 186 192 200 188 210 166 
+                         C 220 184 230 182 241 162 
+                         Q 140 184 39 162 Z" 
+                      fill="url(#creamyGlazeGrad)"/>
+                <!-- Specular Gloss Highlights on Drips -->
+                <path d="M 78 185 Q 82 192 86 186 M 118 193 Q 124 200 128 192 M 154 188 Q 158 195 162 187 M 192 182 Q 196 188 200 182" 
+                      stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.85"/>
+
+                <!-- 3. Top Cake Tier (Royal Wild Berry Layer) -->
+                <!-- Top Sponge Body -->
+                <path d="M 72 108 Q 140 128 208 108 L 208 152 Q 140 174 72 152 Z" fill="url(#topSpongeGrad)"/>
+                <!-- Top Tier Oval Surface -->
+                <ellipse cx="140" cy="108" rx="68" ry="18" fill="url(#topSpongeSurfaceGrad)"/>
+
+                <!-- Top Tier: Dripping Strawberry & Ruby Glaze -->
+                <path d="M 71 108 
+                         C 80 126 88 124 96 112 
+                         C 106 136 120 134 130 114 
+                         C 140 138 154 135 164 114 
+                         C 174 130 186 128 194 112 
+                         C 200 124 204 122 209 108 
+                         Q 140 126 71 108 Z" 
+                      fill="url(#strawberryGlazeGrad)"/>
+                <!-- Glossy Drip Glint Lines -->
+                <path d="M 108 126 Q 112 132 116 126 M 144 128 Q 148 134 152 128 M 178 122 Q 182 127 186 122" 
+                      stroke="#ffffff" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.9"/>
+
+                <!-- 4. Piped Cream Rosettes along the top edge -->
+                <!-- Left Rosette -->
+                <ellipse cx="86" cy="111" rx="8" ry="6" fill="#fffaf0" stroke="#f6deb5" stroke-width="0.8"/>
+                <circle cx="86" cy="109" r="4.5" fill="#ffffff"/>
+                <!-- Center-Left Rosette -->
+                <ellipse cx="114" cy="118" rx="8.5" ry="6.5" fill="#fffaf0" stroke="#f6deb5" stroke-width="0.8"/>
+                <circle cx="114" cy="116" r="5" fill="#ffffff"/>
+                <!-- Center Rosette -->
+                <ellipse cx="140" cy="120" rx="9" ry="7" fill="#fffaf0" stroke="#f6deb5" stroke-width="0.8"/>
+                <circle cx="140" cy="118" r="5.5" fill="#ffffff"/>
+                <!-- Center-Right Rosette -->
+                <ellipse cx="166" cy="118" rx="8.5" ry="6.5" fill="#fffaf0" stroke="#f6deb5" stroke-width="0.8"/>
+                <circle cx="166" cy="116" r="5" fill="#ffffff"/>
+                <!-- Right Rosette -->
+                <ellipse cx="194" cy="111" rx="8" ry="6" fill="#fffaf0" stroke="#f6deb5" stroke-width="0.8"/>
+                <circle cx="194" cy="109" r="4.5" fill="#ffffff"/>
+
+                <!-- 5. Fresh 3D Gourmet Strawberries with Leafy Calyx & Seeds -->
+                <!-- Strawberry 1 (Left) -->
+                <g transform="translate(98, 92) rotate(-8)">
+                  <path d="M 0 16 C -10 6 -9 -2 0 -2 C 9 -2 10 6 0 16 Z" fill="url(#strawberryBodyGrad)"/>
+                  <circle cx="-3" cy="4" r="0.8" fill="#ffd166" opacity="0.8"/><circle cx="2" cy="7" r="0.8" fill="#ffd166" opacity="0.8"/>
+                  <circle cx="0" cy="2" r="0.8" fill="#ffd166" opacity="0.8"/><circle cx="-2" cy="9" r="0.7" fill="#ffd166" opacity="0.8"/>
+                  <!-- Green leafy crown -->
+                  <path d="M -6 -2 Q 0 2 0 -6 Q 0 2 6 -2 Q 2 -1 0 1 Q -2 -1 -6 -2 Z" fill="#2d8a4e"/>
+                </g>
+
+                <!-- Strawberry 2 (Center-Right) -->
+                <g transform="translate(178, 94) rotate(10)">
+                  <path d="M 0 16 C -10 6 -9 -2 0 -2 C 9 -2 10 6 0 16 Z" fill="url(#strawberryBodyGrad)"/>
+                  <circle cx="-2" cy="5" r="0.8" fill="#ffd166" opacity="0.8"/><circle cx="3" cy="8" r="0.8" fill="#ffd166" opacity="0.8"/>
+                  <circle cx="0" cy="3" r="0.8" fill="#ffd166" opacity="0.8"/><circle cx="-1" cy="10" r="0.7" fill="#ffd166" opacity="0.8"/>
+                  <!-- Green leafy crown -->
+                  <path d="M -6 -2 Q 0 2 0 -6 Q 0 2 6 -2 Q 2 -1 0 1 Q -2 -1 -6 -2 Z" fill="#2d8a4e"/>
+                </g>
+
+                <!-- 6. Royal Birthday Candle (Classic Single Candle) -->
+                <g id="classic-candle-group">
+                  <!-- Candle Shadow -->
+                  <ellipse cx="140" cy="107" rx="7" ry="2.5" fill="rgba(0,0,0,0.3)"/>
+                  <!-- Candle Cylinder Body -->
+                  <rect x="135" y="44" width="10" height="62" rx="3.5" fill="url(#candleCylinderGrad)"/>
+                  <!-- Gold & Crimson Spiral Stripes -->
+                  <path d="M 135 55 L 145 50 M 135 68 L 145 63 M 135 81 L 145 76 M 135 94 L 145 89" 
+                        stroke="url(#candleStripeGrad)" stroke-width="3" stroke-linecap="round"/>
+                  <!-- Melted Golden Wax Crown -->
+                  <ellipse cx="140" cy="44" rx="5" ry="2" fill="#ffeaa7"/>
+                  <!-- Candle Wick -->
+                  <line x1="140" y1="44" x2="140" y2="34" stroke="#22181c" stroke-width="2.2" stroke-linecap="round"/>
+                  <!-- Glowing Ember Tip -->
+                  <circle cx="140" cy="34" r="1.4" fill="#ff4500"/>
+                </g>
+
+                <!-- Dual Age Number Candle Group (Activated when Age is set) -->
+                <g id="age-candle-group" style="display:none;">
+                  <ellipse cx="140" cy="107" rx="22" ry="4" fill="rgba(0,0,0,0.3)"/>
+                  <text id="age-num-display" x="140" y="88" text-anchor="middle" font-family="'Cinzel', serif" font-weight="900" font-size="46" fill="url(#platterRimGrad)" stroke="#5c3f05" stroke-width="1.5" filter="url(#cakeDropShadow)">21</text>
+                  <!-- Number Candle Wicks & Embers -->
+                  <line x1="126" y1="48" x2="126" y2="34" stroke="#22181c" stroke-width="2.2" stroke-linecap="round"/>
+                  <circle cx="126" cy="34" r="1.4" fill="#ff4500"/>
+                  <line x1="154" y1="48" x2="154" y2="34" stroke="#22181c" stroke-width="2.2" stroke-linecap="round"/>
+                  <circle cx="154" cy="34" r="1.4" fill="#ff4500"/>
+                </g>
+
+                <!-- 7. Interactive Hyper-Realistic Flame & Warm Glow -->
+                <g class="flame-element" id="flame-element">
+                  <!-- Ambient Warm Halo (Casting Light on Top Tier) -->
+                  <circle cx="140" cy="20" r="30" fill="url(#flameHaloGrad)" opacity="0.55" filter="url(#flameGlow)"/>
+                  <ellipse cx="140" cy="98" rx="42" ry="12" fill="#ffd166" opacity="0.22" filter="url(#flameGlow)"/>
+
+                  <!-- Outer Fiery Orange Body -->
+                  <path d="M 140 4 
+                           C 133 16 125 25 133 34 
+                           C 137 38 143 38 147 34 
+                           C 155 25 147 16 140 4 Z" 
+                        fill="url(#flameCoreRealisticGrad)" 
+                        filter="url(#flameGlow)"/>
+
+                  <!-- Inner Intense Hot Core -->
+                  <ellipse cx="140" cy="26" rx="3.2" ry="7" fill="url(#flameInnerWhite)"/>
+                  <!-- Pure White Flame Center -->
+                  <ellipse cx="140" cy="30" rx="1.8" ry="4" fill="#ffffff" opacity="0.95"/>
+                </g>
+              </svg>
+            </div>
+
+            <!-- Candle Status Label -->
+            <div class="cake-badge-tip" id="cake-status-label">🔥 Candle is Lit • Tap to Blow!</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MEMORIES & POLAROIDS PHOTO SECTION -->
+    <section class="section-wrap">
+      <div class="section-header">
+        <p class="tagline">Captured Moments</p>
+        <h2>A Year Full of Memories</h2>
+      </div>
+
+      <div class="polaroid-grid">
+        <!-- Polaroid 1 -->
+        <div class="polaroid-card" data-polaroid-index="1" title="Click to change photo!">
+          <div class="polaroid-tape"></div>
+          <div class="polaroid-img-wrap">
+            <img id="polaroid-img-1" src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=600&q=80" alt="Birthday Party Cheers">
+            <div class="polaroid-overlay-tip">📷 Change Photo</div>
+          </div>
+          <div class="polaroid-caption" id="polaroid-1-caption">Infinite Laughter</div>
+          <div class="polaroid-sub">Best memories together ✨</div>
+        </div>
+
+        <!-- Polaroid 2 (Custom Upload Target) -->
+        <div class="polaroid-card" data-polaroid-index="2" title="Click to change photo!">
+          <div class="polaroid-tape"></div>
+          <div class="polaroid-img-wrap">
+            <img id="polaroid-img-2" src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=600&q=80" alt="Joyful Birthday Balloons">
+            <div class="polaroid-overlay-tip">📷 Change Photo</div>
+          </div>
+          <div class="polaroid-caption" id="polaroid-2-caption">The Birthday Star</div>
+          <div class="polaroid-sub">Shining brighter every year 🌟</div>
+        </div>
+
+        <!-- Polaroid 3 -->
+        <div class="polaroid-card" data-polaroid-index="3" title="Click to change photo!">
+          <div class="polaroid-tape"></div>
+          <div class="polaroid-img-wrap">
+            <img id="polaroid-img-3" src="https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=600&q=80" alt="Celebration Toast">
+            <div class="polaroid-overlay-tip">📷 Change Photo</div>
+          </div>
+          <div class="polaroid-caption" id="polaroid-3-caption">Sweetest Celebrations</div>
+          <div class="polaroid-sub">To unforgettable chapters 🥂</div>
+        </div>
+      </div>
+
+      <!-- Photo Controls -->
+      <div class="photo-ctrl-bar">
+        <button class="pill-btn" id="upload-photo-btn" type="button">
+          <span>📷</span>
+          <span>Upload Custom Birthday Photo</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- FULL STACK: LIVE GUESTBOOK WISHES WALL -->
+    <section class="section-wrap">
+      <div class="section-header">
+        <p class="tagline">Live Guestbook</p>
+        <h2>Birthday Wishes Wall</h2>
+      </div>
+
+      <div class="guestbook-container">
+        <!-- Post a Wish Form -->
+        <div class="wish-composer-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <h3 style="margin-bottom:0;">💌 Post a Birthday Wish</h3>
+            <button type="button" class="pill-btn" id="toggle-ai-wish-btn" style="font-size:11px; padding:6px 14px;">
+              <span>🤖 AI Wish Helper</span>
+            </button>
+          </div>
+
+          <!-- AI Wish / Shayari Generator Widget -->
+          <div class="ai-wish-box" id="ai-wish-box">
+            <p style="font-size:12px; color:var(--gold); font-weight:700; margin-bottom:8px;">✨ Instant AI Birthday Wishes & Shayari</p>
+            <div class="ai-selectors-row">
+              <select class="ai-select" id="ai-relation-select">
+                <option value="friend">Best Friend 🌟</option>
+                <option value="sister">Sister 🌸</option>
+                <option value="brother">Brother ⚡</option>
+                <option value="love">Special Someone 💖</option>
+                <option value="colleague">Colleague 💼</option>
+              </select>
+              <select class="ai-select" id="ai-vibe-select">
+                <option value="emotional">Heartfelt & Deep 💕</option>
+                <option value="funny">Funny & Roasting 😜</option>
+                <option value="shayari">Poetic Hindi Shayari 📜</option>
+                <option value="short">Short & Punchy 🚀</option>
+              </select>
+              <button type="button" class="pill-btn" id="generate-ai-wish-btn" style="font-size:12px; background:var(--gold); color:#120e24; border-color:var(--gold); font-weight:800;">
+                Generate ✨
+              </button>
+            </div>
+            <div id="ai-suggestions-container"></div>
+          </div>
+
+          <form id="post-wish-form">
+            <div class="form-group">
+              <label for="wish-sender-input">Your Name</label>
+              <input type="text" id="wish-sender-input" placeholder="e.g. Aman, Priya, Family..." maxlength="40" required>
+            </div>
+
+            <div class="form-group">
+              <label for="wish-msg-input">Your Message</label>
+              <textarea id="wish-msg-input" rows="3" placeholder="Write your heartfelt wish or blessing..." maxlength="280" required></textarea>
+            </div>
+
+            <!-- Voice Note Recorder Bar -->
+            <div class="voice-record-bar">
+              <div class="record-status-dot" id="voice-record-dot"></div>
+              <button type="button" class="pill-btn" id="voice-record-btn" style="font-size:12px;">
+                <span id="voice-record-icon">🎙️</span>
+                <span id="voice-record-label">Record Voice Note (15s)</span>
+              </button>
+              <audio id="voice-playback" controls style="display:none; height:32px; max-width:180px;"></audio>
+              <button type="button" class="pill-btn" id="voice-clear-btn" style="display:none; padding:4px 10px; font-size:11px; color:#ff4d8d;">✕ Clear</button>
+            </div>
+
+            <div class="form-group">
+              <label>Pick an Emoji Avatar</label>
+              <div class="emoji-selector">
+                <button type="button" class="emoji-btn selected" data-emoji="🎉">🎉</button>
+                <button type="button" class="emoji-btn" data-emoji="💖">💖</button>
+                <button type="button" class="emoji-btn" data-emoji="🎂">🎂</button>
+                <button type="button" class="emoji-btn" data-emoji="🌟">🌟</button>
+                <button type="button" class="emoji-btn" data-emoji="🚀">🚀</button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary-glow" style="width: 100%; margin-top: 8px;">
+              <span>Send Wish to Wall ✨</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Live Stream of Wishes -->
+        <div class="wishes-stream" id="wishes-stream">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+
+      <!-- Party RSVP Bar -->
+      <div class="rsvp-card">
+        <div class="rsvp-info">
+          <h3>Are you joining the Gala? 🥳</h3>
+          <p id="rsvp-count-badge">Loading attendees...</p>
+          <div class="rsvp-attendees-list" id="rsvp-attendees-list"></div>
+        </div>
+        <form class="rsvp-form" id="rsvp-form">
+          <input type="text" id="rsvp-name-input" placeholder="Your name to RSVP..." required>
+          <button type="submit">I'm Celebrating! ✨</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- GALA FOOTER & SHARING -->
+  <footer class="gala-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <p>Made with endless love & sparkles ✦ <strong>The Grand Birthday Gala</strong></p>
+      </div>
+      <div class="footer-buttons">
+        <button class="pill-btn" id="whatsapp-share-btn" type="button">
+          <span>📲</span>
+          <span>Share via WhatsApp</span>
+        </button>
+        <button class="pill-btn" id="copy-link-footer-btn" type="button">
+          <span>🔗</span>
+          <span>Copy Greeting Link</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: SURPRISE UNBOXING DIALOG -->
+  <dialog id="gift-modal" aria-labelledby="gift-modal-title">
+    <div class="gift-stage" id="gift-3d-wrap" title="Tap to unwrap!">
+      <div class="gift-3d">
+        <div class="gift-cube-lid"></div>
+        <div class="gift-ribbon-bow">🎀</div>
+        <div class="gift-cube-base"></div>
+      </div>
+    </div>
+
+    <h2 id="gift-modal-title">The Best Is Yet To Come!</h2>
+    <p>
+      You are one of a kind, irreplaceable, and truly wonderful. May the upcoming 365 days bring you everything you’ve been hoping for, with plenty of cake along the way!
+    </p>
+
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <button class="btn-primary-glow" id="modal-celebrate-btn" type="button">
+        <span>🎉 Blast Confetti & Hugs!</span>
+      </button>
+      <button class="pill-btn" id="modal-close-btn" type="button">Close</button>
+    </div>
+  </dialog>
+
+  <!-- MODAL: CUSTOM PHOTO UPLOADER DIALOG -->
+  <dialog id="photo-upload-modal" aria-labelledby="photo-modal-head">
+    <h2 id="photo-modal-head">Upload Birthday Photo</h2>
+    <p>Select which polaroid card to update and choose an image from your device!</p>
+
+    <div style="display:flex; justify-content:center; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+      <button type="button" class="pill-btn polaroid-tab" data-target="1">Memory 1</button>
+      <button type="button" class="pill-btn polaroid-tab active" data-target="2">Birthday Star (2)</button>
+      <button type="button" class="pill-btn polaroid-tab" data-target="3">Memory 3</button>
+    </div>
+
+    <div class="upload-container">
+      <label class="file-drop-zone">
+        <input type="file" id="photo-file-input" accept="image/*">
+        <span style="font-size: 36px; display: block; margin-bottom: 8px;">📷</span>
+        <strong>Click to Browse Image</strong>
+        <p style="font-size: 12px; margin-top: 4px; color: var(--text-muted);">Supports PNG, JPG, WebP (Saved permanently)</p>
+      </label>
+    </div>
+
+    <div style="margin-top: 24px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <button class="pill-btn" id="reset-photos-btn" type="button" style="color:var(--text-muted); font-size:12px;">Reset Default Photos</button>
+      <button class="btn-primary-glow" id="close-photo-modal-btn" type="button"><span>Done ✨</span></button>
+    </div>
+  </dialog>
+
+  <!-- MODAL: SET COUNTDOWN DATE & TIME DIALOG -->
+  <dialog id="countdown-modal" aria-labelledby="countdown-modal-title">
+    <div style="font-size: 38px; margin-bottom: 8px;">⏳ ✨</div>
+    <h2 id="countdown-modal-title">Set Birthday Countdown</h2>
+    <p>Select the exact date and time when the birthday party or celebration begins!</p>
+
+    <form id="countdown-form" style="display:grid; gap:16px; text-align:left; margin-top:16px;">
+      <div class="form-group">
+        <label for="countdown-datetime-input">Celebration Date & Time</label>
+        <input type="datetime-local" id="countdown-datetime-input" required style="color-scheme: dark; font-size:15px; padding:12px;">
+      </div>
+
+      <div>
+        <label style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:8px;">Quick Presets</label>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="pill-btn preset-time-btn" data-hours="1">In 1 Hour ⚡</button>
+          <button type="button" class="pill-btn preset-time-btn" data-hours="6">In 6 Hours 🎂</button>
+          <button type="button" class="pill-btn preset-time-btn" data-midnight="true">Tonight Midnight 🌙</button>
+          <button type="button" class="pill-btn preset-time-btn" data-days="1">Tomorrow 🎈</button>
+          <button type="button" class="pill-btn preset-time-btn" data-now="true" style="color:var(--gold); border-color:var(--gold);">Party Now! 🎉</button>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:16px; justify-content:center; flex-wrap:wrap;">
+        <button type="submit" class="btn-primary-glow">Save Countdown ✨</button>
+        <button type="button" class="pill-btn" id="close-countdown-modal-btn">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL: JUKEBOX TRACK SELECTOR -->
+  <dialog id="jukebox-modal" aria-labelledby="jukebox-modal-title">
+    <div style="font-size: 38px; margin-bottom: 8px;">🎵 📻</div>
+    <h2 id="jukebox-modal-title">Birthday Gala Jukebox</h2>
+    <p>Choose the celebratory soundtrack for this special day!</p>
+
+    <div class="jukebox-list">
+      <div class="jukebox-track-card active" data-track="gala">
+        <div class="jukebox-track-info">
+          <span class="track-icon">🎂</span>
+          <div>
+            <div class="track-title">Grand Birthday Gala</div>
+            <div class="track-desc">Classic upbeat celebration anthem</div>
+          </div>
+        </div>
+        <span class="track-play-badge">Playing</span>
+      </div>
+
+      <div class="jukebox-track-card" data-track="pop">
+        <div class="jukebox-track-info">
+          <span class="track-icon">🎸</span>
+          <div>
+            <div class="track-title">Upbeat Pop Sparkle</div>
+            <div class="track-desc">Modern euphoric party dance chimes</div>
+          </div>
+        </div>
+        <span class="track-play-badge">Play</span>
+      </div>
+
+      <div class="jukebox-track-card" data-track="bollywood">
+        <div class="jukebox-track-info">
+          <span class="track-icon">🎺</span>
+          <div>
+            <div class="track-title">Bollywood Nostalgia</div>
+            <div class="track-desc">Baar Baar Din Yeh Aaye melody vibes</div>
+          </div>
+        </div>
+        <span class="track-play-badge">Play</span>
+      </div>
+
+      <div class="jukebox-track-card" data-track="lofi">
+        <div class="jukebox-track-info">
+          <span class="track-icon">🎹</span>
+          <div>
+            <div class="track-title">Peaceful Lofi Piano</div>
+            <div class="track-desc">Relaxing heartfelt acoustic bells</div>
+          </div>
+        </div>
+        <span class="track-play-badge">Play</span>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn-primary-glow" id="close-jukebox-modal-btn" type="button"><span>Done Listening ✨</span></button>
+    </div>
+  </dialog>
+
+  <!-- MODAL: THEME PICKER -->
+  <dialog id="theme-modal" aria-labelledby="theme-modal-title">
+    <div style="font-size: 38px; margin-bottom: 8px;">🎨 ✨</div>
+    <h2 id="theme-modal-title">Select Party Theme</h2>
+    <p>Transform the celebration aesthetic with one tap!</p>
+
+    <div class="theme-card-grid">
+      <button type="button" class="theme-card-btn active" data-theme="royal">
+        <div class="theme-swatch" style="background: radial-gradient(circle, #ffd166, #24163d);"></div>
+        <span>👑 Royal Gold</span>
+      </button>
+
+      <button type="button" class="theme-card-btn" data-theme="rosegold">
+        <div class="theme-swatch" style="background: radial-gradient(circle, #ff758f, #40142a);"></div>
+        <span>🌸 Rose Gold</span>
+      </button>
+
+      <button type="button" class="theme-card-btn" data-theme="neon">
+        <div class="theme-swatch" style="background: radial-gradient(circle, #00f2fe, #151a44);"></div>
+        <span>🌌 Cosmic Neon</span>
+      </button>
+
+      <button type="button" class="theme-card-btn" data-theme="emerald">
+        <div class="theme-swatch" style="background: radial-gradient(circle, #10b981, #0e3524);"></div>
+        <span>🌿 Emerald Gala</span>
+      </button>
+    </div>
+
+    <div style="margin-top: 16px;">
+      <button class="pill-btn" id="close-theme-modal-btn" type="button">Close</button>
+    </div>
+  </dialog>
+
+  <!-- MODAL: SPIN THE BIRTHDAY WHEEL -->
+  <dialog id="wheel-modal" aria-labelledby="wheel-modal-title">
+    <div style="font-size: 36px; margin-bottom: 4px;">🎡 ✨</div>
+    <h2 id="wheel-modal-title">Spin The Birthday Wheel</h2>
+    <p>Spin to reveal a special party fortune or blessing for today!</p>
+
+    <div class="wheel-container">
+      <div class="wheel-pointer"></div>
+      <canvas id="wheel-canvas" width="320" height="320"></canvas>
+      <div class="wheel-center-knob" id="spin-wheel-center-btn" title="Tap to spin!">🎯</div>
+    </div>
+
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:8px;">
+      <button class="btn-primary-glow" id="spin-wheel-action-btn" type="button"><span>🎰 Spin The Wheel!</span></button>
+      <button class="pill-btn" id="close-wheel-modal-btn" type="button">Close</button>
+    </div>
+  </dialog>
+
+  <!-- MODAL: BALLOON POP 30s ARCADE GAME -->
+  <dialog id="game-modal" aria-labelledby="game-modal-title" style="width:min(580px, 94vw);">
+    <div class="game-hud">
+      <div class="hud-stat">⏳ Time: <span class="hud-val" id="game-time">30</span>s</div>
+      <div class="hud-stat">🎈 Popped: <span class="hud-val" id="game-score">0</span></div>
+      <div class="hud-stat">🔥 Best: <span class="hud-val" id="game-best">0</span></div>
+    </div>
+
+    <div class="game-arena" id="game-arena">
+      <div id="game-start-prompt" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(12,8,24,0.9); z-index:20;">
+        <div style="font-size: 44px; margin-bottom: 12px;">🎈 🎯</div>
+        <h3>30s Balloon Pop Frenzy!</h3>
+        <p style="font-size: 13px; color: var(--text-muted); max-width: 320px; margin: 8px 0 16px;">
+          Tap or click as many flying balloons as you can before the 30-second party timer runs out!
+        </p>
+        <button class="btn-primary-glow" id="start-game-btn" type="button"><span>🚀 Start Game!</span></button>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; display:flex; justify-content:center;">
+      <button class="pill-btn" id="close-game-modal-btn" type="button">Exit Game</button>
+    </div>
+  </dialog>
+
+  <!-- MODAL: DOWNLOAD GREETING CARD PREVIEW -->
+  <dialog id="card-modal" aria-labelledby="card-modal-title" style="width:min(520px, 94vw);">
+    <div style="font-size: 36px; margin-bottom: 6px;">📥 ✨</div>
+    <h2 id="card-modal-title">Your Birthday Greeting Poster</h2>
+    <p>A customized keepsake card ready to download and share on WhatsApp or Instagram!</p>
+
+    <div style="margin: 16px auto; max-width: 340px; border-radius: 16px; overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,0.6); border: 1.5px solid var(--border-gold);">
+      <canvas id="card-preview-canvas" width="600" height="750" style="width:100%; display:block;"></canvas>
+    </div>
+
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:16px;">
+      <button class="btn-primary-glow" id="download-card-png-btn" type="button"><span>💾 Save Image (PNG)</span></button>
+      <button class="pill-btn" id="close-card-modal-btn" type="button">Close</button>
+    </div>
+  </dialog>
+
+  <!-- Toast Notification Alert -->
+  <div class="magic-toast" id="magic-toast">✨ Link copied to clipboard!</div>
+
+  <!-- Main JavaScript Controller -->
+  <script src="public/app.js"></script>
+</body>
+</html>
