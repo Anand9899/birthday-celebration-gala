@@ -444,6 +444,11 @@ const heroNameDisplay = document.getElementById("hero-name-display");
 const curtainNameTitle = document.getElementById("curtain-name-title");
 const nameForm = document.getElementById("name-form");
 const nameInput = document.getElementById("name-input");
+const nameControlsBar = document.getElementById("name-controls-bar");
+const starNameBadge = document.getElementById("star-name-badge");
+const editNameBtn = document.getElementById("edit-name-btn");
+const resetNameBtn = document.getElementById("reset-name-btn");
+const resetCelebrationBtn = document.getElementById("reset-celebration-btn");
 const musicBtn = document.getElementById("music-btn");
 const musicLabel = document.getElementById("music-label");
 const magicToast = document.getElementById("magic-toast");
@@ -454,27 +459,46 @@ function showMagicToast(msg) {
   setTimeout(() => magicToast.classList.remove("visible"), 3200);
 }
 
-function hideNameForm(animate = true) {
-  if (!nameForm) return;
-  if (!animate) {
-    nameForm.style.display = "none";
-    return;
+function editCelebration() {
+  if (nameInput) {
+    nameInput.focus();
+    nameInput.select();
   }
-  nameForm.style.transition = "opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease, margin 0.4s ease, padding 0.4s ease";
-  nameForm.style.opacity = "0";
-  nameForm.style.transform = "translateY(-12px) scale(0.96)";
-  nameForm.style.maxHeight = nameForm.offsetHeight + "px";
-  setTimeout(() => {
-    nameForm.style.maxHeight = "0";
-    nameForm.style.marginBottom = "0";
-    nameForm.style.paddingTop = "0";
-    nameForm.style.paddingBottom = "0";
-    nameForm.style.overflow = "hidden";
-    nameForm.style.border = "none";
-    setTimeout(() => {
-      nameForm.style.display = "none";
-    }, 400);
-  }, 80);
+  const nameCard = document.querySelector(".name-personalizer-card");
+  if (nameCard) {
+    nameCard.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
+
+function resetCelebration() {
+  if (!confirm("Are you sure you want to reset the celebration name to default 'Birthday Star'?")) return;
+
+  try {
+    localStorage.removeItem("birthday_star_name");
+    localStorage.removeItem("birthday_star_age");
+  } catch(e) {}
+
+  try {
+    if (window.history && window.history.replaceState) {
+      const u = new URL(window.location);
+      u.searchParams.delete("name");
+      u.searchParams.delete("age");
+      window.history.replaceState({}, "", u.pathname + (u.search ? u.search : ""));
+    }
+  } catch(e) {}
+
+  // Request server reset
+  fetch('/api/celebration/reset', { method: 'POST' }).catch(() => {});
+
+  updateName("Birthday Star", "", false);
+  if (nameInput) {
+    nameInput.value = "";
+    nameInput.focus();
+  }
+  const envNameInput = document.getElementById("envelope-name-input");
+  if (envNameInput) envNameInput.value = "";
+  if (ageInput) ageInput.value = "";
+  showMagicToast("🔄 Celebration reset to Birthday Star! ✨");
 }
 
 const ageInput = document.getElementById("age-input");
@@ -488,12 +512,26 @@ function updateName(newName, newAge = undefined, syncServer = true) {
   appState.name = isCustom ? newName.trim() : "Birthday Star";
   if (newAge !== undefined && newAge !== null && newAge !== "") {
     appState.age = String(newAge).trim();
+  } else if (!isCustom) {
+    appState.age = "";
   }
 
-  // Update Hero and Curtain
+  // Update Hero, Envelope and Document Title
   heroNameDisplay.textContent = appState.name + (appState.age ? ` (${appState.age})` : "") + " ✨";
   curtainNameTitle.textContent = `Happy Birthday, ${appState.name}!`;
   document.title = `Happy Birthday, ${appState.name}! 🎂 | Birthday Gala`;
+
+  // Keep all input fields in sync
+  if (nameInput) {
+    nameInput.value = isCustom ? appState.name : "";
+  }
+  const envNameInput = document.getElementById("envelope-name-input");
+  if (envNameInput) {
+    envNameInput.value = isCustom ? appState.name : "";
+  }
+  if (ageInput) {
+    ageInput.value = appState.age || "";
+  }
 
   const p2Cap = document.getElementById("polaroid-2-caption");
   if (p2Cap) p2Cap.textContent = appState.name;
@@ -512,17 +550,25 @@ function updateName(newName, newAge = undefined, syncServer = true) {
     if (ageCandles) ageCandles.style.display = "none";
   }
 
-  // Once name is set, hide the name input bar option permanently
   if (isCustom) {
     try { localStorage.setItem("birthday_star_name", appState.name); } catch(e) {}
-    hideNameForm(true);
+  } else {
+    try {
+      localStorage.removeItem("birthday_star_name");
+      localStorage.removeItem("birthday_star_age");
+    } catch(e) {}
   }
 
   try {
     if (window.history && window.history.replaceState && window.location.protocol.startsWith("http")) {
       const u = new URL(window.location);
-      u.searchParams.set("name", appState.name);
-      if (appState.age) u.searchParams.set("age", appState.age);
+      if (isCustom) {
+        u.searchParams.set("name", appState.name);
+        if (appState.age) u.searchParams.set("age", appState.age);
+      } else {
+        u.searchParams.delete("name");
+        u.searchParams.delete("age");
+      }
       window.history.replaceState({}, "", u);
     }
   } catch(e) {}
@@ -536,32 +582,36 @@ function updateName(newName, newAge = undefined, syncServer = true) {
   }
 }
 
-nameForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const val = nameInput.value.trim();
-  const ageVal = ageInput ? ageInput.value.trim() : "";
-  if (val || ageVal) {
-    updateName(val || appState.name, ageVal, true);
-    nameInput.value = "";
-    if (ageInput) ageInput.value = "";
-    triggerConfettiCascade(140);
-    showMagicToast(`Celebration dedicated to ${val || appState.name}! 🎉`);
-  }
-});
+if (nameForm) {
+  nameForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const val = nameInput.value.trim();
+    const ageVal = ageInput ? ageInput.value.trim() : "";
+    if (val || ageVal) {
+      updateName(val || appState.name, ageVal, true);
+      triggerConfettiCascade(140);
+      showMagicToast(`Celebration dedicated to ${val || appState.name}! 🎉`);
+    }
+  });
+}
 
-heroNameDisplay.addEventListener("click", () => {
-  const ask = prompt("Enter birthday star's name:", appState.name);
-  if (ask && ask.trim()) {
-    const askAge = prompt("Enter age (leave blank if unchanged):", appState.age || "");
-    updateName(ask.trim(), askAge ? askAge.trim() : appState.age, true);
-    triggerConfettiCascade(150);
-    showMagicToast(`Updated name to ${ask}! ✨`);
-  }
-});
+if (heroNameDisplay) {
+  heroNameDisplay.addEventListener("click", () => {
+    editCelebration();
+  });
+}
+
+if (editNameBtn) editNameBtn.addEventListener("click", editCelebration);
+if (resetNameBtn) resetNameBtn.addEventListener("click", resetCelebration);
+if (resetCelebrationBtn) resetCelebrationBtn.addEventListener("click", resetCelebration);
 
 // Stage 1 Unwrapping
 openEnvelopeBtn.addEventListener("click", () => {
   if (appState.openedCurtain) return;
+  const envNameInput = document.getElementById("envelope-name-input");
+  if (envNameInput && envNameInput.value.trim()) {
+    updateName(envNameInput.value.trim(), undefined, true);
+  }
   appState.openedCurtain = true;
   curtainOverlay.classList.add("hidden");
   audio.playChimeFanfare();
@@ -572,6 +622,16 @@ openEnvelopeBtn.addEventListener("click", () => {
     if (!appState.musicPlaying) toggleMusic();
   }, 900);
 });
+
+const envNameInput = document.getElementById("envelope-name-input");
+if (envNameInput) {
+  envNameInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      openEnvelopeBtn.click();
+    }
+  });
+}
 
 // Replay Envelope button
 const replayCurtainBtn = document.getElementById("replay-curtain-btn");
@@ -2677,16 +2737,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
   if (queryName && queryName.trim()) {
     updateName(queryName.trim(), queryAge ? queryAge.trim() : storedAge, false);
-    hideNameForm(false);
   } else if (storedName && storedName.trim()) {
     updateName(storedName.trim(), storedAge, false);
-    hideNameForm(false);
   } else {
     updateName("Birthday Star", "", false);
-    if (nameForm) {
-      nameForm.style.display = "flex";
-      nameForm.style.opacity = "1";
-    }
   }
 
   // 2. Initialize Core Engines
@@ -2714,6 +2768,12 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         if (res.data.name && res.data.name !== "Birthday Star" && !queryName) {
           updateName(res.data.name, res.data.age || appState.age, false);
+        } else if ((!res.data.name || res.data.name === "Birthday Star") && !queryName) {
+          try {
+            localStorage.removeItem("birthday_star_name");
+            localStorage.removeItem("birthday_star_age");
+          } catch(e) {}
+          updateName("Birthday Star", "", false);
         } else if (res.data.age && !appState.age) {
           updateName(appState.name, res.data.age, false);
         }

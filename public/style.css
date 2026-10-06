@@ -513,6 +513,46 @@ html, body {
   box-shadow: 0 6px 20px var(--gold-glow);
 }
 
+/* Name Management Controls Bar */
+.name-controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  padding: 8px 14px;
+  margin-bottom: 28px;
+  max-width: 480px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+.name-controls-bar .current-star-badge {
+  font-size: 13px;
+  color: var(--text-muted);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.name-controls-bar .current-star-badge strong {
+  color: var(--gold);
+  font-weight: 700;
+}
+.mini-btn {
+  padding: 6px 12px !important;
+  font-size: 11px !important;
+  border-radius: 10px !important;
+  letter-spacing: 0.03em !important;
+  cursor: pointer;
+}
+.danger-pill:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.6) !important;
+  color: #ff6b6b !important;
+}
+
 /* Hero CTA Buttons */
 .hero-btn-row {
   display: flex;

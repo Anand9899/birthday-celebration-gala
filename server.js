@@ -106,6 +106,20 @@ app.put('/api/celebration', (req, res) => {
   res.json({ success: true, data: updated, message: 'Celebration profile updated!' });
 });
 
+app.post('/api/celebration/reset', (req, res) => {
+  const defaultData = {
+    name: 'Birthday Star',
+    age: '',
+    tagline: 'Today calls for a grand celebration!',
+    message: 'May your year be filled with boundless joy, unforgettable adventures, and giant slices of cake.',
+    targetDate: '2026-10-01T20:00:00',
+    theme: 'sunset',
+    updatedAt: new Date().toISOString()
+  };
+  writeJson('celebration.json', defaultData);
+  res.json({ success: true, data: defaultData, message: 'Celebration reset to default!' });
+});
+
 // 2. Live Wishes Guestbook API
 app.get('/api/wishes', (req, res) => {
   const wishes = readJson('wishes.json', []);

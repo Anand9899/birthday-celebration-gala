@@ -38,7 +38,13 @@
       <p class="envelope-sub">
         A magical world of celebration, fireworks, music, and heartwarming wishes was specially crafted just for you today.
       </p>
-      <button class="btn-open-sesame" type="button">
+
+      <!-- Quick Name Input on Envelope -->
+      <div class="envelope-name-picker" style="margin: 16px 0 20px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;" onclick="event.stopPropagation()">
+        <input type="text" id="envelope-name-input" placeholder="Enter Birthday Star's Name..." maxlength="28" style="background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,215,0,0.6); border-radius: 14px; padding: 12px 18px; color: #fff; font-size: 15px; font-weight: 600; outline: none; width: min(280px, 85vw); text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+      </div>
+
+      <button class="btn-open-sesame" id="unwrap-celebration-btn" type="button">
         <span>✨ Unwrap The Celebration</span>
       </button>
     </div>
@@ -88,6 +94,12 @@
       <button class="pill-btn" id="replay-curtain-btn" type="button" title="View Invitation Envelope Again">
         <span>📜</span>
         <span>Envelope</span>
+      </button>
+
+      <!-- Reset Name Button -->
+      <button class="pill-btn danger-pill" id="reset-celebration-btn" type="button" title="Reset Name to Default">
+        <span>🔄</span>
+        <span>Reset Name</span>
       </button>
 
       <!-- Share Button -->
@@ -146,12 +158,18 @@
             </button>
           </div>
 
-          <!-- Quick Name & Age Personalizer Input -->
-          <form class="name-input-bar" id="name-form" action="#">
-            <input type="text" id="name-input" maxlength="28" autocomplete="off" placeholder="Name..." aria-label="Birthday Star Name">
-            <input type="number" id="age-input" min="1" max="120" placeholder="Age (e.g. 21)" aria-label="Birthday Age" style="max-width: 110px; border-left: 1px solid var(--border-glass); padding-left: 10px;">
-            <button type="submit">Set Stars ✨</button>
-          </form>
+          <!-- Name Personalizer Bar (Always Visible) -->
+          <div class="name-personalizer-card" style="margin-bottom: 26px; max-width: 520px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:12px; font-weight:700; color:var(--gold); letter-spacing:0.04em; text-transform:uppercase;">
+              <span>👑 Birthday Star Name & Age:</span>
+              <button type="button" id="reset-name-btn" class="pill-btn mini-btn danger-pill" title="Reset Name to Default" style="padding:4px 10px; font-size:11px;">🔄 Reset</button>
+            </div>
+            <form class="name-input-bar" id="name-form" action="#" style="margin-bottom: 0;">
+              <input type="text" id="name-input" maxlength="28" autocomplete="off" placeholder="Enter Birthday Star's Name..." aria-label="Birthday Star Name">
+              <input type="number" id="age-input" min="1" max="120" placeholder="Age" aria-label="Birthday Age" style="max-width: 90px; border-left: 1px solid var(--border-glass); padding-left: 10px;">
+              <button type="submit" id="save-name-btn">Set Name ✨</button>
+            </form>
+          </div>
 
           <!-- Main Action Buttons -->
           <div class="hero-btn-row">
